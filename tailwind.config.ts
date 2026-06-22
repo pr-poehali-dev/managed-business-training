@@ -18,7 +18,14 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				display: ['Oswald', 'sans-serif'],
+				sans: ['Golos Text', 'sans-serif'],
+			},
 			colors: {
+				lime: 'hsl(var(--lime))',
+				orange: 'hsl(var(--orange))',
+				violet: 'hsl(var(--violet))',
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',

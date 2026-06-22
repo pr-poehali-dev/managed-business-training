@@ -19,13 +19,14 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				display: ['Oswald', 'sans-serif'],
+				display: ['Cormorant Garamond', 'serif'],
+				serif: ['Cormorant', 'serif'],
 				sans: ['Golos Text', 'sans-serif'],
 			},
 			colors: {
-				lime: 'hsl(var(--lime))',
-				orange: 'hsl(var(--orange))',
-				violet: 'hsl(var(--violet))',
+				gold: 'hsl(var(--gold))',
+				chocolate: 'hsl(var(--chocolate))',
+				cream: 'hsl(var(--cream))',
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',

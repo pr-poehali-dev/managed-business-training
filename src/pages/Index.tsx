@@ -1,101 +1,83 @@
 import { useState } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
-const SPEAKER_IMG =
-  'https://cdn.poehali.dev/projects/f207f703-c18a-40a7-88bf-dc18f47fe141/files/188a3009-2e68-4d1e-920d-9c6f9ff66f7c.jpg';
+const HERO_IMG =
+  'https://cdn.poehali.dev/projects/f207f703-c18a-40a7-88bf-dc18f47fe141/files/7bca6b0f-6fa7-4f6d-bef7-495b26ba346d.jpg';
+const PRODUCT_IMG =
+  'https://cdn.poehali.dev/projects/f207f703-c18a-40a7-88bf-dc18f47fe141/files/b98ad6e0-acf2-4b7f-b626-1f055054bb7c.jpg';
+const ATELIER_IMG =
+  'https://cdn.poehali.dev/projects/f207f703-c18a-40a7-88bf-dc18f47fe141/files/b9e98151-7bf8-4193-8805-98e7be74e3e0.jpg';
 
-const problems = [
-  'Сливаю бюджеты на маркетинг — плачу за рекламу, а возврата нет.',
-  'Не понимаю, почему одни менеджеры продают дорого, а другие — много, но дёшево.',
-  'РОП отчитывается процентом плана, а бизнес не растёт.',
-  'Каждый день влезаю в сделки, разбираю звонки, «дожимаю» клиентов.',
-  'Не вижу, где потеряна выручка и какой у компании потенциал.',
-  'Отдел продаж — чёрный ящик. Что там происходит — непонятно.',
+const seasons = ['Все', 'Осенняя', 'Зимняя', 'Весенняя'] as const;
+const colors = ['Все', 'Соболь', 'Норка', 'Шиншилла', 'Лиса'] as const;
+
+type Product = {
+  id: number;
+  name: string;
+  season: string;
+  color: string;
+  size: string;
+  price: number;
+  composition: string;
+};
+
+const products: Product[] = [
+  { id: 1, name: 'Пальто Milano', season: 'Зимняя', color: 'Соболь', size: '42–50', price: 1290000, composition: '100% баргузинский соболь' },
+  { id: 2, name: 'Шуба Firenze', season: 'Зимняя', color: 'Норка', size: '40–52', price: 690000, composition: '100% норка Black Glama' },
+  { id: 3, name: 'Жакет Roma', season: 'Осенняя', color: 'Шиншилла', size: '42–48', price: 980000, composition: '100% шиншилла' },
+  { id: 4, name: 'Накидка Venezia', season: 'Весенняя', color: 'Лиса', size: '44–50', price: 420000, composition: '100% финская лиса' },
+  { id: 5, name: 'Пальто Torino', season: 'Осенняя', color: 'Норка', size: '42–54', price: 750000, composition: '100% норка с кашемиром' },
+  { id: 6, name: 'Болеро Napoli', season: 'Весенняя', color: 'Соболь', size: '40–48', price: 560000, composition: '100% соболь' },
 ];
 
-const audience = [
-  {
-    icon: 'Crown',
-    text: 'Собственникам, которые хотят управлять результатом, а не операционкой маркетинга и продаж.',
-  },
-  {
-    icon: 'Flame',
-    text: 'Тем, кто устал быть «пожарным» и готов выстроить систему без ежедневного контроля.',
-  },
-  {
-    icon: 'ShieldOff',
-    text: 'Тем, кому надоели оправдания: «лиды плохие», «у конкурентов дешевле», «на рынке кризис».',
-  },
+const fmt = (n: number) => n.toLocaleString('ru-RU') + ' ₽';
+
+const collections = [
+  { name: 'Осенняя', desc: 'Лёгкие меха и приглушённые оттенки для золотого сезона.', icon: 'Leaf' },
+  { name: 'Зимняя', desc: 'Объёмные пальто из соболя и норки — тепло и роскошь.', icon: 'Snowflake' },
+  { name: 'Весенняя', desc: 'Воздушные накидки и болеро для тёплых вечеров.', icon: 'Flower2' },
 ];
 
-const tasks = [
-  {
-    num: '01',
-    title: 'Перестать сливать бюджет на маркетинг',
-    points: [
-      'Определите ценностный тип вашего клиента',
-      'Настроите коммуникацию, попадающую в ЦА с первого касания',
-      'Исключите слова и приёмы, которые отталкивают клиента',
-    ],
-  },
-  {
-    num: '02',
-    title: 'Увидеть скрытый потенциал выручки в отделе продаж',
-    points: [
-      'Поймёте, где резерв роста без найма новых менеджеров',
-      'За 10 минут в день оцените эффективность РОПа и менеджеров',
-      'Получите формулу реального плана продаж',
-    ],
-  },
-  {
-    num: '03',
-    title: 'Выстроить управление продажами без операционки',
-    points: [
-      'План из 8 элементов работающей системы продаж',
-      'Поймёте, какие задачи должен решать РОП, а какие — нет',
-      'Контроль результата по 5 ключевым показателям',
-    ],
-  },
-  {
-    num: '04',
-    title: 'Уйти с готовым планом действий',
-    points: [
-      'Сформируете ценности своей ЦА прямо на тренинге',
-      'Посчитаете реальный потенциал своей компании',
-      'Заберёте пошаговый план на ближайший понедельник',
-    ],
-  },
-];
-
-const credentials = [
-  'Практик с опытом построения и управления продажами более 25 лет',
-  'Ответственный советник по развитию продаж собственника бизнеса',
-  'Автор запатентованной методики «4 группы ценностей»',
-  '5 лет создаёт системы продаж, обучает команды, разрабатывает стандарты',
-  'Реализованы продукты и услуги стоимостью от 49 ₽ до 500 000 000 ₽',
+const advantages = [
+  { icon: 'History', title: 'Более 30 лет', desc: 'Итальянский модный дом с безупречной репутацией с 1992 года.' },
+  { icon: 'Gem', title: 'Лучшее сырьё', desc: 'Закупаем мех только высшей категории на международных аукционах.' },
+  { icon: 'PenTool', title: 'Авторский дизайн', desc: 'Каждая модель создаётся вручную дизайнерами в нашем ателье.' },
+  { icon: 'Sparkles', title: 'Эксклюзивность', desc: 'Ограниченные коллекции — вы не встретите такую вещь на других.' },
 ];
 
 export default function Index() {
-  const [form, setForm] = useState({ name: '', email: '', phone: '' });
-  const [sent, setSent] = useState(false);
+  const [season, setSeason] = useState<string>('Все');
+  const [color, setColor] = useState<string>('Все');
+  const [maxPrice, setMaxPrice] = useState<number>(1300000);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSent(true);
-  };
+  const filtered = products.filter(
+    (p) =>
+      (season === 'Все' || p.season === season) &&
+      (color === 'Все' || p.color === color) &&
+      p.price <= maxPrice,
+  );
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden selection:bg-lime selection:text-background">
-      {/* НАВ */}
-      <header className="fixed top-0 inset-x-0 z-50 backdrop-blur-xl bg-background/70 border-b border-border">
-        <div className="container flex items-center justify-between h-16 px-4 md:px-8">
-          <span className="font-display font-bold text-lg tracking-tight">
-            ЯНА ХРАПОВИЦКАЯ
-          </span>
-          <a href="#form">
-            <Button className="bg-lime text-primary-foreground hover:bg-lime/90 font-semibold rounded-full px-5">
+    <div className="min-h-screen bg-background text-foreground grain">
+      {/* NAV */}
+      <header className="fixed top-0 inset-x-0 z-50 bg-background/85 backdrop-blur-md border-b border-border">
+        <div className="container flex items-center justify-between h-20 px-4 md:px-8">
+          <a href="#top" className="font-display text-3xl tracking-[0.25em] text-chocolate">
+            BRASCHI
+          </a>
+          <nav className="hidden md:flex items-center gap-10 text-sm tracking-luxe uppercase text-muted-foreground">
+            <a href="#catalog" className="hover:text-chocolate transition-colors">Каталог</a>
+            <a href="#brand" className="hover:text-chocolate transition-colors">Бренд</a>
+            <a href="#contacts" className="hover:text-chocolate transition-colors">Контакты</a>
+          </nav>
+          <a href="#contacts">
+            <Button className="bg-chocolate text-cream hover:bg-chocolate/90 rounded-none tracking-wider uppercase text-xs px-6">
               Записаться
             </Button>
           </a>
@@ -103,221 +85,266 @@ export default function Index() {
       </header>
 
       {/* HERO */}
-      <section className="relative pt-32 pb-24 md:pt-44 md:pb-32 grid-bg">
-        <div className="absolute top-10 -left-20 w-96 h-96 rounded-full bg-violet/40 blob animate-float-slow" />
-        <div className="absolute bottom-0 right-0 w-[28rem] h-[28rem] rounded-full bg-orange/30 blob animate-float-slow" style={{ animationDelay: '3s' }} />
-        <div className="container relative px-4 md:px-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-lime/40 bg-lime/10 px-4 py-1.5 text-sm text-lime mb-8 animate-fade-up">
-            <Icon name="Clock" size={16} />
-            6 часов очного тренинга с практикой
-          </div>
-          <h1 className="font-display font-bold uppercase leading-[0.95] text-5xl md:text-7xl lg:text-8xl max-w-5xl animate-fade-up" style={{ animationDelay: '0.1s' }}>
-            Управляемый бизнес <span className="text-gradient">без хаоса</span>
-          </h1>
-          <p className="mt-8 max-w-2xl text-lg md:text-xl text-muted-foreground animate-fade-up" style={{ animationDelay: '0.2s' }}>
-            Как за 6 часов настроить маркетинг по ценностям и управление
-            продажами — чтобы расти без ежедневного погружения в операционку.
+      <section id="top" className="relative min-h-screen flex items-end overflow-hidden">
+        <img src={HERO_IMG} alt="BRASCHI" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-chocolate/80 via-chocolate/20 to-transparent" />
+        <div className="relative container px-4 md:px-8 pb-24 md:pb-32">
+          <p className="text-cream/80 tracking-luxe uppercase text-sm mb-6 animate-fade-up">
+            Эксклюзивный итальянский бренд
           </p>
-          <div className="mt-10 flex flex-wrap items-center gap-4 animate-fade-up" style={{ animationDelay: '0.3s' }}>
-            <a href="#form">
-              <Button size="lg" className="bg-lime text-primary-foreground hover:bg-lime/90 font-bold text-base rounded-full px-8 h-14 glow-lime">
-                Записаться на тренинг
-                <Icon name="ArrowRight" size={20} className="ml-1" />
+          <h1 className="font-display text-cream text-6xl md:text-8xl lg:text-9xl leading-[0.9] max-w-4xl animate-fade-up" style={{ animationDelay: '0.1s' }}>
+            Искусство меха<br />в каждой детали
+          </h1>
+          <p className="text-cream/85 text-lg md:text-xl max-w-xl mt-8 font-serif italic animate-fade-up" style={{ animationDelay: '0.2s' }}>
+            Более 30 лет создаём изделия, в которых роскошь становится наследием.
+          </p>
+          <div className="mt-10 flex flex-wrap gap-4 animate-fade-up" style={{ animationDelay: '0.3s' }}>
+            <a href="#catalog">
+              <Button size="lg" className="bg-gold text-chocolate hover:bg-gold/90 rounded-none tracking-luxe uppercase text-xs h-14 px-10">
+                Смотреть коллекцию
               </Button>
             </a>
-            <a href="#tasks">
-              <Button size="lg" variant="outline" className="rounded-full px-8 h-14 border-border bg-secondary/40 hover:bg-secondary font-semibold text-base">
-                Что внутри
+            <a href="#brand">
+              <Button size="lg" variant="outline" className="border-cream/60 bg-transparent text-cream hover:bg-cream hover:text-chocolate rounded-none tracking-luxe uppercase text-xs h-14 px-10">
+                О бренде
               </Button>
             </a>
-          </div>
-          <div className="mt-16 flex flex-wrap gap-x-12 gap-y-6 animate-fade-up" style={{ animationDelay: '0.4s' }}>
-            {[
-              ['300–600%', 'рост выручки за 12 мес'],
-              ['25+ лет', 'в управлении продажами'],
-              ['5 показателей', 'для контроля результата'],
-            ].map(([big, small]) => (
-              <div key={small}>
-                <div className="font-display font-bold text-4xl md:text-5xl text-gradient">{big}</div>
-                <div className="text-sm text-muted-foreground mt-1">{small}</div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
 
-      {/* БЕГУЩАЯ СТРОКА */}
-      <div className="border-y border-border py-4 bg-secondary/30 overflow-hidden">
-        <div className="flex whitespace-nowrap animate-marquee">
-          {[...Array(2)].map((_, i) => (
-            <div key={i} className="flex items-center font-display uppercase text-2xl md:text-3xl text-muted-foreground">
-              {['Маркетинг по ценностям', 'Система продаж', 'Без операционки', 'Реальный план продаж', 'Потенциал выручки'].map((t) => (
-                <span key={t} className="flex items-center">
-                  <Icon name="Sparkles" size={20} className="mx-6 text-lime" />
-                  {t}
-                </span>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ДЛЯ КОГО */}
+      {/* COLLECTIONS / CAROUSEL feel */}
       <section className="py-24 md:py-32 container px-4 md:px-8">
-        <p className="font-display uppercase text-lime tracking-widest mb-4">Для кого</p>
-        <h2 className="font-display font-semibold uppercase text-4xl md:text-6xl max-w-3xl mb-16">
-          Тренинг для собственников бизнеса
-        </h2>
-        <div className="grid md:grid-cols-3 gap-6">
-          {audience.map((a) => (
-            <div key={a.icon} className="rounded-3xl border border-border bg-card p-8 hover:border-lime/50 transition-colors">
-              <div className="w-14 h-14 rounded-2xl bg-lime/15 flex items-center justify-center text-lime mb-6">
-                <Icon name={a.icon} size={28} />
+        <div className="text-center mb-16">
+          <p className="text-gold tracking-luxe uppercase text-sm mb-4">Коллекции сезона</p>
+          <h2 className="font-display text-5xl md:text-7xl text-chocolate">Главные модели</h2>
+        </div>
+        <div className="grid md:grid-cols-3 gap-8">
+          {collections.map((c, i) => (
+            <div key={c.name} className="group animate-fade-up" style={{ animationDelay: `${i * 0.1}s` }}>
+              <div className="relative overflow-hidden">
+                <img src={PRODUCT_IMG} alt={c.name} className="w-full aspect-[3/4] object-cover transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-chocolate/0 group-hover:bg-chocolate/20 transition-colors" />
+                <div className="absolute top-4 left-4 w-12 h-12 bg-cream/90 flex items-center justify-center text-chocolate">
+                  <Icon name={c.icon} size={22} />
+                </div>
               </div>
-              <p className="text-lg text-foreground/90">{a.text}</p>
+              <h3 className="font-display text-3xl text-chocolate mt-6">{c.name} коллекция</h3>
+              <p className="text-muted-foreground mt-2">{c.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ПРОБЛЕМЫ */}
-      <section className="py-24 md:py-32 bg-secondary/20 border-y border-border">
+      {/* CATALOG */}
+      <section id="catalog" className="py-24 md:py-32 bg-secondary/40 border-y border-border">
         <div className="container px-4 md:px-8">
-          <p className="font-display uppercase text-orange tracking-widest mb-4">Знакомо?</p>
-          <h2 className="font-display font-semibold uppercase text-4xl md:text-6xl max-w-3xl mb-16">
-            С какими проблемами разберёмся
-          </h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            {problems.map((p, i) => (
-              <div key={i} className="flex items-start gap-4 rounded-2xl border border-border bg-card p-6">
-                <Icon name="X" size={22} className="text-orange shrink-0 mt-0.5" />
-                <p className="text-lg text-foreground/90">{p}</p>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div>
+              <p className="text-gold tracking-luxe uppercase text-sm mb-4">Каталог</p>
+              <h2 className="font-display text-5xl md:text-7xl text-chocolate">Премиальный мех</h2>
+            </div>
+            <p className="text-muted-foreground max-w-sm">
+              Подберите изделие по сезону, меху и бюджету. Все цены — за эксклюзивные модели ручной работы.
+            </p>
+          </div>
+
+          {/* FILTERS */}
+          <div className="bg-card border border-border p-6 md:p-8 mb-12 grid md:grid-cols-3 gap-8">
+            <div>
+              <p className="text-xs tracking-luxe uppercase text-muted-foreground mb-3">Сезон</p>
+              <div className="flex flex-wrap gap-2">
+                {seasons.map((s) => (
+                  <button key={s} onClick={() => setSeason(s)} className={`px-4 py-2 text-sm border transition-colors ${season === s ? 'bg-chocolate text-cream border-chocolate' : 'border-border hover:border-chocolate'}`}>
+                    {s}
+                  </button>
+                ))}
               </div>
+            </div>
+            <div>
+              <p className="text-xs tracking-luxe uppercase text-muted-foreground mb-3">Мех</p>
+              <div className="flex flex-wrap gap-2">
+                {colors.map((c) => (
+                  <button key={c} onClick={() => setColor(c)} className={`px-4 py-2 text-sm border transition-colors ${color === c ? 'bg-chocolate text-cream border-chocolate' : 'border-border hover:border-chocolate'}`}>
+                    {c}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-xs tracking-luxe uppercase text-muted-foreground mb-3">
+                Цена до {fmt(maxPrice)}
+              </p>
+              <input
+                type="range"
+                min={400000}
+                max={1300000}
+                step={10000}
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(Number(e.target.value))}
+                className="w-full accent-[hsl(var(--gold))]"
+              />
+            </div>
+          </div>
+
+          {/* GRID */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filtered.map((p) => (
+              <Dialog key={p.id}>
+                <DialogTrigger asChild>
+                  <div className="group cursor-pointer text-left">
+                    <div className="relative overflow-hidden bg-cream">
+                      <img src={PRODUCT_IMG} alt={p.name} className="w-full aspect-[3/4] object-cover transition-transform duration-700 group-hover:scale-105" />
+                      <span className="absolute top-3 right-3 bg-cream/90 text-chocolate text-xs px-3 py-1 tracking-wide uppercase">{p.season}</span>
+                    </div>
+                    <div className="flex justify-between items-baseline mt-5">
+                      <h3 className="font-display text-2xl text-chocolate">{p.name}</h3>
+                      <span className="text-gold font-serif text-xl">{fmt(p.price)}</span>
+                    </div>
+                    <p className="text-muted-foreground text-sm mt-1">{p.color} · размеры {p.size}</p>
+                  </div>
+                </DialogTrigger>
+                <DialogContent className="max-w-3xl bg-card border-border p-0 overflow-hidden">
+                  <div className="grid md:grid-cols-2">
+                    <img src={PRODUCT_IMG} alt={p.name} className="w-full h-full object-cover aspect-[3/4]" />
+                    <div className="p-8 flex flex-col">
+                      <span className="text-gold tracking-luxe uppercase text-xs mb-2">{p.season} коллекция</span>
+                      <h3 className="font-display text-4xl text-chocolate mb-4">{p.name}</h3>
+                      <div className="space-y-3 text-sm border-t border-border pt-4">
+                        <div className="flex justify-between"><span className="text-muted-foreground">Состав</span><span>{p.composition}</span></div>
+                        <div className="flex justify-between"><span className="text-muted-foreground">Размеры</span><span>{p.size}</span></div>
+                        <div className="flex justify-between"><span className="text-muted-foreground">Мех</span><span>{p.color}</span></div>
+                      </div>
+                      <div className="mt-auto pt-6">
+                        <p className="font-serif text-3xl text-gold mb-4">{fmt(p.price)}</p>
+                        <Button className="w-full bg-chocolate text-cream hover:bg-chocolate/90 rounded-none tracking-luxe uppercase text-xs h-12">
+                          Записаться на примерку
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             ))}
           </div>
+          {filtered.length === 0 && (
+            <p className="text-center text-muted-foreground py-12">По выбранным фильтрам ничего не найдено.</p>
+          )}
         </div>
       </section>
 
-      {/* ЗАДАЧИ */}
-      <section id="tasks" className="py-24 md:py-32 container px-4 md:px-8">
-        <p className="font-display uppercase text-lime tracking-widest mb-4">Результат</p>
-        <h2 className="font-display font-semibold uppercase text-4xl md:text-6xl max-w-3xl mb-16">
-          Какие задачи решит тренинг
-        </h2>
-        <div className="grid md:grid-cols-2 gap-6">
-          {tasks.map((t) => (
-            <div key={t.num} className="group relative rounded-3xl border border-border bg-card p-8 overflow-hidden hover:border-lime/50 transition-colors">
-              <span className="absolute -top-4 -right-2 font-display font-bold text-8xl text-secondary/60 group-hover:text-lime/15 transition-colors">
-                {t.num}
-              </span>
-              <h3 className="font-display font-semibold uppercase text-2xl mb-6 relative">{t.title}</h3>
-              <ul className="space-y-3 relative">
-                {t.points.map((p) => (
-                  <li key={p} className="flex items-start gap-3">
-                    <Icon name="Check" size={20} className="text-lime shrink-0 mt-0.5" />
-                    <span className="text-foreground/85">{p}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* СПИКЕР */}
-      <section className="py-24 md:py-32 bg-secondary/20 border-y border-border">
-        <div className="container px-4 md:px-8 grid lg:grid-cols-2 gap-12 items-center">
+      {/* BRAND STORY */}
+      <section id="brand" className="py-24 md:py-32 container px-4 md:px-8">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div className="relative">
-            <div className="absolute -inset-4 bg-gradient-to-tr from-lime/30 to-orange/30 blob rounded-[2rem]" />
-            <img
-              src={SPEAKER_IMG}
-              alt="Яна Храповицкая"
-              className="relative rounded-[2rem] w-full object-cover aspect-[4/5] border border-border"
-            />
+            <img src={ATELIER_IMG} alt="Ателье BRASCHI" className="w-full aspect-[4/5] object-cover" />
+            <div className="absolute -bottom-6 -right-6 bg-gold text-chocolate p-8 hidden md:block">
+              <p className="font-display text-6xl leading-none">30+</p>
+              <p className="tracking-luxe uppercase text-xs mt-2">лет мастерства</p>
+            </div>
           </div>
           <div>
-            <p className="font-display uppercase text-lime tracking-widest mb-4">Кто ведёт</p>
-            <h2 className="font-display font-bold uppercase text-5xl md:text-6xl mb-2">Яна Храповицкая</h2>
-            <p className="text-orange font-semibold text-lg mb-8">Советник по развитию продаж</p>
-            <ul className="space-y-4">
-              {credentials.map((c) => (
-                <li key={c} className="flex items-start gap-3">
-                  <Icon name="BadgeCheck" size={22} className="text-lime shrink-0 mt-0.5" />
-                  <span className="text-lg text-foreground/90">{c}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* ФОРМА */}
-      <section id="form" className="py-24 md:py-32 container px-4 md:px-8">
-        <div className="relative max-w-3xl mx-auto rounded-[2.5rem] border border-border bg-card p-8 md:p-14 overflow-hidden">
-          <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-lime/20 blob" />
-          <div className="relative">
-            <div className="inline-flex items-center gap-2 rounded-full border border-orange/40 bg-orange/10 px-4 py-1.5 text-sm text-orange mb-6">
-              <Icon name="CalendarCheck" size={16} />
-              6 часов очно · практика · кейсы · план действий
-            </div>
-            <h2 className="font-display font-bold uppercase text-4xl md:text-5xl mb-4">
-              Запишитесь на тренинг
+            <p className="text-gold tracking-luxe uppercase text-sm mb-4">История бренда</p>
+            <h2 className="font-display text-5xl md:text-6xl text-chocolate leading-tight mb-8">
+              Наследие, рождённое в Италии
             </h2>
-            <p className="text-muted-foreground text-lg mb-8">
-              Оставьте контакты — пришлём подтверждение и детали на email.
+            <p className="text-muted-foreground text-lg mb-6 font-serif italic">
+              Более тридцати лет дом BRASCHI создаёт меховые изделия, в которых традиции европейского ремесла встречаются с современным дизайном.
             </p>
-
-            {sent ? (
-              <div className="rounded-2xl bg-lime/15 border border-lime/40 p-8 text-center">
-                <Icon name="MailCheck" size={48} className="text-lime mx-auto mb-4" />
-                <h3 className="font-display font-semibold uppercase text-2xl mb-2">Заявка принята!</h3>
-                <p className="text-foreground/80">
-                  Подтверждение и детали тренинга придут на {form.email || 'вашу почту'}.
-                </p>
+            <div className="space-y-6">
+              <div className="flex gap-4">
+                <Icon name="Truck" size={24} className="text-gold shrink-0 mt-1" />
+                <div>
+                  <h4 className="font-display text-2xl text-chocolate">Закупка сырья</h4>
+                  <p className="text-muted-foreground">Отбираем мех высшей категории на международных аукционах.</p>
+                </div>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <Input
-                  required
-                  placeholder="Ваше имя"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="h-14 rounded-2xl bg-secondary/40 border-border text-base px-5"
-                />
-                <Input
-                  required
-                  type="email"
-                  placeholder="Email для подтверждения"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="h-14 rounded-2xl bg-secondary/40 border-border text-base px-5"
-                />
-                <Input
-                  required
-                  type="tel"
-                  placeholder="Телефон"
-                  value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  className="h-14 rounded-2xl bg-secondary/40 border-border text-base px-5"
-                />
-                <Button type="submit" size="lg" className="w-full bg-lime text-primary-foreground hover:bg-lime/90 font-bold text-base rounded-2xl h-14 glow-lime">
-                  Записаться на тренинг
-                  <Icon name="ArrowRight" size={20} className="ml-1" />
-                </Button>
-                <p className="text-center text-sm text-muted-foreground">
-                  Нажимая кнопку, вы соглашаетесь на обработку персональных данных.
-                </p>
-              </form>
-            )}
+              <div className="flex gap-4">
+                <Icon name="PenTool" size={24} className="text-gold shrink-0 mt-1" />
+                <div>
+                  <h4 className="font-display text-2xl text-chocolate">Работа дизайнеров</h4>
+                  <p className="text-muted-foreground">Каждая модель прорабатывается и шьётся вручную в нашем ателье.</p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <Icon name="Sparkles" size={24} className="text-gold shrink-0 mt-1" />
+                <div>
+                  <h4 className="font-display text-2xl text-chocolate">Эксклюзивность</h4>
+                  <p className="text-muted-foreground">Ограниченные коллекции для тех, кто ценит уникальность.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-24">
+          {advantages.map((a) => (
+            <div key={a.title} className="border border-border bg-card p-8 hover:border-gold transition-colors">
+              <Icon name={a.icon} size={32} className="text-gold mb-5" />
+              <h3 className="font-display text-2xl text-chocolate mb-2">{a.title}</h3>
+              <p className="text-muted-foreground text-sm">{a.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CONTACTS */}
+      <section id="contacts" className="py-24 md:py-32 bg-chocolate text-cream">
+        <div className="container px-4 md:px-8 grid lg:grid-cols-2 gap-16">
+          <div>
+            <p className="text-gold tracking-luxe uppercase text-sm mb-4">Контакты и сервис</p>
+            <h2 className="font-display text-5xl md:text-7xl mb-10">Бутик в Москве</h2>
+            <div className="space-y-7">
+              <div className="flex gap-4">
+                <Icon name="MapPin" size={24} className="text-gold shrink-0 mt-1" />
+                <div>
+                  <h4 className="font-display text-2xl">Адрес бутика</h4>
+                  <p className="text-cream/75">г. Москва, ул. Петровка, 15 · ежедневно 11:00–21:00</p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <Icon name="Phone" size={24} className="text-gold shrink-0 mt-1" />
+                <div>
+                  <h4 className="font-display text-2xl">Телефон</h4>
+                  <p className="text-cream/75">+7 (495) 000-00-00</p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <Icon name="Shirt" size={24} className="text-gold shrink-0 mt-1" />
+                <div>
+                  <h4 className="font-display text-2xl">Примерка и доставка</h4>
+                  <p className="text-cream/75">Запишитесь на индивидуальную примерку. Доставляем по Москве и всей России.</p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <Icon name="RefreshCw" size={24} className="text-gold shrink-0 mt-1" />
+                <div>
+                  <h4 className="font-display text-2xl">Политика возврата</h4>
+                  <p className="text-cream/75">Возврат и обмен изделия в течение 14 дней с сохранением товарного вида.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="bg-cream text-chocolate p-8 md:p-12">
+            <h3 className="font-display text-4xl mb-2">Запись на примерку</h3>
+            <p className="text-chocolate/70 mb-8">Оставьте контакты — наш консультант свяжется с вами.</p>
+            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+              <input placeholder="Ваше имя" className="w-full h-12 px-4 bg-secondary/60 border border-border outline-none focus:border-gold" />
+              <input placeholder="Телефон" className="w-full h-12 px-4 bg-secondary/60 border border-border outline-none focus:border-gold" />
+              <input placeholder="Email" className="w-full h-12 px-4 bg-secondary/60 border border-border outline-none focus:border-gold" />
+              <Button className="w-full bg-chocolate text-cream hover:bg-chocolate/90 rounded-none tracking-luxe uppercase text-xs h-12">
+                Записаться
+              </Button>
+            </form>
           </div>
         </div>
       </section>
 
-      {/* ФУТЕР */}
-      <footer className="border-t border-border py-10">
-        <div className="container px-4 md:px-8 flex flex-col md:flex-row justify-between items-center gap-4 text-muted-foreground">
-          <span className="font-display uppercase tracking-wide">Яна Храповицкая · Тренинг по продажам</span>
-          <span className="text-sm">© {new Date().getFullYear()} Все права защищены</span>
+      {/* FOOTER */}
+      <footer className="bg-chocolate text-cream/60 border-t border-cream/15 py-10">
+        <div className="container px-4 md:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <span className="font-display text-2xl tracking-[0.25em] text-cream">BRASCHI</span>
+          <span className="text-sm tracking-wide">© {new Date().getFullYear()} Эксклюзивный итальянский мех</span>
         </div>
       </footer>
     </div>

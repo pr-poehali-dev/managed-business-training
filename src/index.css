@@ -4,39 +4,39 @@
 
 @layer base {
   :root {
-    --background: 252 47% 6%;
-    --foreground: 250 30% 96%;
+    --background: 38 36% 95%;
+    --foreground: 25 30% 14%;
 
-    --card: 252 40% 9%;
-    --card-foreground: 250 30% 96%;
+    --card: 36 33% 97%;
+    --card-foreground: 25 30% 14%;
 
-    --popover: 252 40% 9%;
-    --popover-foreground: 250 30% 96%;
+    --popover: 36 33% 97%;
+    --popover-foreground: 25 30% 14%;
 
-    --primary: 84 81% 55%;
-    --primary-foreground: 252 60% 8%;
+    --primary: 25 38% 22%;
+    --primary-foreground: 38 40% 96%;
 
-    --secondary: 255 35% 16%;
-    --secondary-foreground: 250 30% 96%;
+    --secondary: 34 25% 88%;
+    --secondary-foreground: 25 38% 22%;
 
-    --muted: 255 30% 14%;
-    --muted-foreground: 250 15% 65%;
+    --muted: 34 22% 90%;
+    --muted-foreground: 28 14% 42%;
 
-    --accent: 22 95% 56%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 36 48% 52%;
+    --accent-foreground: 30 40% 12%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 70% 45%;
+    --destructive-foreground: 38 40% 96%;
 
-    --border: 255 30% 18%;
-    --input: 255 30% 18%;
-    --ring: 84 81% 55%;
+    --border: 32 20% 82%;
+    --input: 32 20% 82%;
+    --ring: 36 48% 52%;
 
-    --radius: 1rem;
+    --radius: 0.25rem;
 
-    --lime: 84 81% 55%;
-    --orange: 22 95% 56%;
-    --violet: 268 90% 64%;
+    --gold: 36 48% 52%;
+    --chocolate: 25 38% 22%;
+    --cream: 38 40% 96%;
 
     --sidebar-background: 0 0% 98%;
 
@@ -107,22 +107,29 @@
 
 @layer utilities {
   .font-display {
-    font-family: "Oswald", sans-serif;
+    font-family: "Cormorant Garamond", "Cormorant", serif;
   }
-  .text-gradient {
-    background: linear-gradient(100deg, hsl(var(--lime)), hsl(var(--orange)));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+  .font-serif {
+    font-family: "Cormorant", serif;
   }
-  .glow-lime {
-    box-shadow: 0 0 40px -8px hsl(var(--lime) / 0.5);
+  .tracking-luxe {
+    letter-spacing: 0.32em;
   }
-  .grid-bg {
-    background-image:
-      linear-gradient(hsl(var(--border) / 0.4) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--border) / 0.4) 1px, transparent 1px);
-    background-size: 56px 56px;
+  .text-gold {
+    color: hsl(var(--gold));
+  }
+  .bg-gold {
+    background-color: hsl(var(--gold));
+  }
+  .border-gold {
+    border-color: hsl(var(--gold));
+  }
+  .grain {
+    background-image: radial-gradient(
+      hsl(var(--chocolate) / 0.05) 1px,
+      transparent 1px
+    );
+    background-size: 4px 4px;
   }
   .blob {
     filter: blur(80px);
